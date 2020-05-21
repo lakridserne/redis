@@ -18,14 +18,14 @@ var
   batchSize = 50,
 
   // standard libraries
-  // we had trouble getting the right connection to the database due to authentication issues
-  // We tried using the suggestions from the book as seen in the comment below, but apparently createClient() isn't a class
   http = require('http'), //createClient(5984, 'admin:PocketGuide87@localhost'),
   redis = require('redis'),
 
   // database clients
   CouchConnection = require('cradle').Connection,
-  couchClient = new(CouchConnection)().database(couchDBDatabase),
+  couchClient = new CouchConnection('http://127.0.0.1:5984', {
+    auth: {username: 'admin', password: 'PocketGuide87'},
+  }).database(couchDBDatabase),
   redisClient = redis.createClient(6379);
 /**
  * A helper function that builds a good CouchDB key
@@ -37,7 +37,7 @@ function couchKeyify(string)
   return string.
     replace(/[\t \?\#\\\-\+\.\,'"()*&!\/]+/g, '_').
     replace(/^_+/, '');
-};
+}
 
 /*
  * Keep track of the number of bands processed, output every 1000 loaded,
@@ -56,7 +56,7 @@ function trackLineCount(increment) {
     console.log(`Total Bands Loaded: ${processedBands}`);
     redisClient.quit();
   }
-};
+}
 
 /*
  * Post documents into CouchDB in bulk.
@@ -71,7 +71,7 @@ function saveDocs(documents, count) {
       trackLineCount(count);
     }
   });
-};
+}
 
 /*
  * Loop through all of the bands populated in Redis. We expect
@@ -89,10 +89,10 @@ function saveDocs(documents, count) {
   }
  */
 function populateBands() {
-  // Create the "bands" database
-  couchClient.create(function(err) {
-    console.error(`Could not create the bands database in CouchDB: ${err.message}`);
-  });
+  // // Create the "bands" database
+  // couchClient.create(function(err) {
+  //   console.error(`Could not create the bands database in CouchDB: ${err.message}`);
+  // });
 
   redisClient.keys('band:*', function(err, bandKeys) {
     totalBands = bandKeys.length;

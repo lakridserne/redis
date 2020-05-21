@@ -24,7 +24,9 @@ var
 
   // database clients
   CouchConnection = require('cradle').Connection,
-  couchClient = new(CouchConnection)().database('bands'),
+  couchClient = new CouchConnection('http://127.0.0.1:5984', {
+    auth: {username: 'admin', password: 'PocketGuide87'},
+  }).database('bands'),
   neo4jClient = neo4j.createClient({}),
   redisClient = redis.createClient(6379);
 
@@ -45,7 +47,7 @@ function getCouchDoc(path, res, callback) {
       callback(doc);
     }
   });
-};
+}
 
 /**
  * Wraps a block of HTML with a standard template. HTML lives in template.html.
@@ -54,7 +56,7 @@ function getCouchDoc(path, res, callback) {
 function htmlTemplate(innerHtml) {
   var file_data = fs.readFileSync( 'template.html', 'utf8' );
   return file_data.replace("[[YIELD]]", innerHtml);
-};
+}
 
 function writeTemplate(response, innerHtml, values) {
   response.write(mustache.to_html(htmlTemplate(innerHtml), values));

@@ -14,7 +14,7 @@ var
   redis = require('redis'),
   
   // Custom libraries
-  couch = require('../couchdb/watchChangesContinuous.js'),
+  couch = require('./couchdb/watchChangesContinuous.js'),
   neo4j = require('./neo4jCachingClient.js'),
   
   // Database clients
